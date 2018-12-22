@@ -35,8 +35,8 @@ int main() {
     iimavlib::video_buffer_t data(sdl.get_size(), color); //рендер окна и цвета
     sdl.start(); //поехали
 
-    iimavlib::rectangle_t position(data.size.width / 2, data.size.height / 2, 128,
-                                   128); //злые формулы задают позицию кружочка
+    iimavlib::rectangle_t position(380, 280, 20,
+                                   20); //положение круга (начинается с верхнего левого угла), размеры фигуры
     iimavlib::video_buffer_t bg(data.size, color); //рендер
 
     while (sdl.blit(data)) {
