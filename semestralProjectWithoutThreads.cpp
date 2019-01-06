@@ -11,6 +11,7 @@
 #include <cassert>
 #include <thread>
 #include <cmath>
+
 #ifdef SYSTEM_LINUX
 #include <unistd.h>
 #include <algorithm>
@@ -23,11 +24,11 @@ namespace iimavlib {
     class Noize : public SDLDevice, public AudioFilter {
     public:
         static const rgb_t bg;
+
         Noize(int width, int height) :
                 SDLDevice(width, height, "send the help please"),
                 AudioFilter(pAudioFilter()),
-                data(rectangle_t(0, 0, width, height), bg)
-        {
+                data(rectangle_t(0, 0, width, height), bg) {
 
             load_file("/home/boris/mm1semwork/iimavlib-master/data/drum0.wav");
             load_file("/home/boris/mm1semwork/iimavlib-master/data/white.wav");
@@ -40,11 +41,12 @@ namespace iimavlib {
             // Stop the rendering thread
             stop();
         }
+
     private:
         /// Video data
         video_buffer_t data;
 
-        std::vector<std::vector<audio_sample_t>> noises;
+        std::vector <std::vector<audio_sample_t>> noises;
         /// Next sample to be played for current drum
         size_t position_;
         /// Index of currently playing drum
@@ -57,22 +59,22 @@ namespace iimavlib {
 
         iimavlib::rgb_t random() {
 
-            std::vector<iimavlib::rgb_t> shades_pink = {
+            std::vector <iimavlib::rgb_t> shades_pink = {
                     iimavlib::rgb_t(255, 192, 203),
-                    iimavlib::rgb_t(255,182,193),
-                    iimavlib::rgb_t(255,105,180),
-                    iimavlib::rgb_t(255,20,147),
-                    iimavlib::rgb_t(219,112,147),
-                    iimavlib::rgb_t(199,21,133)
+                    iimavlib::rgb_t(255, 182, 193),
+                    iimavlib::rgb_t(255, 105, 180),
+                    iimavlib::rgb_t(255, 20, 147),
+                    iimavlib::rgb_t(219, 112, 147),
+                    iimavlib::rgb_t(199, 21, 133)
             };
 
-            std::vector<iimavlib::rgb_t> shades_brown = {
-                    iimavlib::rgb_t(139,69,19),
-                    iimavlib::rgb_t(160,82,45),
-                    iimavlib::rgb_t(128,0,0),
-                    iimavlib::rgb_t(165,42,42),
-                    iimavlib::rgb_t(222,184,135),
-                    iimavlib::rgb_t(210,180,140)
+            std::vector <iimavlib::rgb_t> shades_brown = {
+                    iimavlib::rgb_t(139, 69, 19),
+                    iimavlib::rgb_t(160, 82, 45),
+                    iimavlib::rgb_t(128, 0, 0),
+                    iimavlib::rgb_t(165, 42, 42),
+                    iimavlib::rgb_t(222, 184, 135),
+                    iimavlib::rgb_t(210, 180, 140)
             };
 
             int index = 0 + (std::rand() % (5 - 0 + 1));
@@ -87,16 +89,16 @@ namespace iimavlib {
                 case 2:
                     return shades_brown[index];
 
-                default:
-                {return iimavlib::rgb_t(13, 21, 133); };
+                default: {
+                    return iimavlib::rgb_t(13, 21, 133);
+                };
             }
 
         };
 
-        bool do_mouse_button(const int button, const bool pressed, const int x, const int y)
-        {
+        bool do_mouse_button(const int button, const bool pressed, const int x, const int y) {
             if (!pressed) return true;
-            std::unique_lock<std::mutex> lock(position_mutex_);
+            std::unique_lock <std::mutex> lock(position_mutex_);
             mode++;
             index_ = mode - 1;
             position_ = 0;
@@ -108,8 +110,7 @@ namespace iimavlib {
         void update_screen() {
             if (mode == 3) {
                 update_city();
-            }
-            else {
+            } else {
                 update_noize();
             }
         }
@@ -125,9 +126,9 @@ namespace iimavlib {
             draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 360, t * 3, 4, 15), rain_color);
 
             draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 100, t * 3 + 100, 4, 15), rain_color);
-            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 260, t * 3+ 180, 4, 15), rain_color);
-            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 350, t * 3+ 130, 4, 15), rain_color);
-            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 450, t * 3+ 210, 4, 15), rain_color);
+            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 260, t * 3 + 180, 4, 15), rain_color);
+            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 350, t * 3 + 130, 4, 15), rain_color);
+            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 450, t * 3 + 210, 4, 15), rain_color);
 
             draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 400, t * 3, 4, 15), rain_color);
             draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 540, t * 3, 4, 15), rain_color);
@@ -135,8 +136,8 @@ namespace iimavlib {
 
             draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 420, t * 3 + 110, 4, 15), rain_color);
             draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 580, t * 3 + 310, 4, 15), rain_color);
-            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 310, t * 3+ 170, 4, 15), rain_color);
-            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 490, t * 3+ 270, 4, 15), rain_color);
+            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 310, t * 3 + 170, 4, 15), rain_color);
+            draw_rectangle(data, iimavlib::rectangle_t(t / 10 + 490, t * 3 + 270, 4, 15), rain_color);
 
         }
 
@@ -155,7 +156,7 @@ namespace iimavlib {
             draw_rectangle(data, iimavlib::rectangle_t(420, 200, 80, 400), iimavlib::rgb_t(0, 0, 82));
 
             // draw windows
-            window_color = iimavlib::rgb_t(0, 0, t*5);
+            window_color = iimavlib::rgb_t(0, 0, t * 5);
             draw_rectangle(data, iimavlib::rectangle_t(150, 280, 50, 60), window_color);
             draw_rectangle(data, iimavlib::rectangle_t(210, 280, 50, 60), window_color);
             draw_rectangle(data, iimavlib::rectangle_t(150, 350, 50, 60), window_color);
@@ -170,7 +171,7 @@ namespace iimavlib {
 
             int xy = 100;
             //STROKA 1
-            iimavlib::rgb_t  sh = random();
+            iimavlib::rgb_t sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(0, 0, xy, xy), sh);
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(xy, 0, xy, xy), sh);
@@ -288,8 +289,7 @@ namespace iimavlib {
             blit(data);
         }
 
-        error_type_t do_process(audio_buffer_t& buffer)
-        {
+        error_type_t do_process(audio_buffer_t &buffer) {
             t++;
             if (t > 200) t = 0;
             if (is_stopped()) return error_type_t::failed;
@@ -301,12 +301,11 @@ namespace iimavlib {
             if (index_ < 0 || (noises.size() <= static_cast<size_t>(index_))) {
                 // If there's no active drum, we just fill the buffer with zeroes
                 std::fill(data, data + buffer.valid_samples, 0);
-            }
-            else {
+            } else {
                 //logger[log_level::info] << "Using " << index_ << " from " << position_;
-                std::unique_lock<std::mutex> lock(position_mutex_);
+                std::unique_lock <std::mutex> lock(position_mutex_);
                 // Get ref. to the current drum's buffer
-                const auto& drum = noises[index_];
+                const auto &drum = noises[index_];
                 size_t samples = noises[index_].size();
                 size_t remaining = buffer.valid_samples;
                 size_t written = 0;
@@ -314,13 +313,13 @@ namespace iimavlib {
                     // We still have some non-copied samples
                     const size_t avail = samples - position_; // How many samples are available current drum
                     written = (avail >= remaining) ? remaining : avail; // We will copy this count of samples.
-                    auto first = drum.cbegin() + position_;		// Iterator to first sample to copy
-                    auto last = (avail >= remaining) ? first + remaining : drum.cend(); // Iterator after the last sample that will be written
+                    auto first = drum.cbegin() + position_;        // Iterator to first sample to copy
+                    auto last = (avail >= remaining) ? first + remaining
+                                                     : drum.cend(); // Iterator after the last sample that will be written
                     std::copy(first, last, data); // Copy the samples to the buffer
                     position_ += written; // Advance the drum's buffer position
                     remaining -= written;
-                }
-                else {
+                } else {
                     // We've already copied all the sample, so let's set current drum to none
                     index_ = -1;
                     position_ = 0;
@@ -337,16 +336,16 @@ namespace iimavlib {
             return error_type_t::ok;
         }
 
-        bool load_file(const std::string filename)
-        {
+        bool load_file(const std::string filename) {
             try {
                 WaveFile wav(filename);  // Load wave file
                 const audio_params_t params = wav.get_params();
-                if (params.rate != sampling_rate_t::rate_44kHz) throw std::runtime_error("Wrong sampling rate. 44kHz expected.");
+                if (params.rate != sampling_rate_t::rate_44kHz)
+                    throw std::runtime_error("Wrong sampling rate. 44kHz expected.");
                 //			if (params.format != sampling_format_t::format_16bit_signed) throw std::runtime_error("Wrong sampling format. Signed 16bits expected.");
                 //			if (params.num_channels != 2) throw std::runtime_error("Wrong number of channel. Expected stereo file.");
                 size_t samples = 944100;
-                std::vector<audio_sample_t> data(samples);
+                std::vector <audio_sample_t> data(samples);
                 wav.read_data(data, samples);
                 data.resize(samples);
                 logger[log_level::info] << "Read " << samples << "samples";
@@ -365,26 +364,24 @@ namespace iimavlib {
 };
 
 
-
-
 iimavlib::rgb_t random(int mode) {
 
-    std::vector<iimavlib::rgb_t> shades_pink = {
+    std::vector <iimavlib::rgb_t> shades_pink = {
             iimavlib::rgb_t(255, 192, 203),
-            iimavlib::rgb_t(255,182,193),
-            iimavlib::rgb_t(255,105,180),
-            iimavlib::rgb_t(255,20,147),
-            iimavlib::rgb_t(219,112,147),
-            iimavlib::rgb_t(199,21,133)
+            iimavlib::rgb_t(255, 182, 193),
+            iimavlib::rgb_t(255, 105, 180),
+            iimavlib::rgb_t(255, 20, 147),
+            iimavlib::rgb_t(219, 112, 147),
+            iimavlib::rgb_t(199, 21, 133)
     };
 
-    std::vector<iimavlib::rgb_t> shades_brown = {
-            iimavlib::rgb_t(139,69,19),
-            iimavlib::rgb_t(160,82,45),
-            iimavlib::rgb_t(128,0,0),
-            iimavlib::rgb_t(165,42,42),
-            iimavlib::rgb_t(222,184,135),
-            iimavlib::rgb_t(210,180,140)
+    std::vector <iimavlib::rgb_t> shades_brown = {
+            iimavlib::rgb_t(139, 69, 19),
+            iimavlib::rgb_t(160, 82, 45),
+            iimavlib::rgb_t(128, 0, 0),
+            iimavlib::rgb_t(165, 42, 42),
+            iimavlib::rgb_t(222, 184, 135),
+            iimavlib::rgb_t(210, 180, 140)
     };
 
     int index = 0 + (std::rand() % (5 - 0 + 1));
@@ -399,8 +396,9 @@ iimavlib::rgb_t random(int mode) {
         case 2:
             return shades_brown[index];
 
-        default:
-        {return iimavlib::rgb_t(13, 21, 133); };
+        default: {
+            return iimavlib::rgb_t(13, 21, 133);
+        };
     }
 
 };
@@ -427,8 +425,7 @@ void openWindow() {
 }
 
 int main()
-try
-{
+try {
     using namespace iimavlib;
     iimavlib::audio_id_t device_id = iimavlib::PlatformDevice::default_device();
     iimavlib::audio_params_t params;
@@ -440,7 +437,7 @@ try
     //	sink->set_buffers(1,128);
     sink->run();
 }
-catch (std::exception& e) {
+catch (std::exception &e) {
     using namespace iimavlib;
     logger[log_level::fatal] << "The application ended unexpectedly with an error: " << e.what();
 }
