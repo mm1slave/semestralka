@@ -53,10 +53,12 @@ namespace iimavlib {
         int index_;
         /// Mutex to lock @em index_ and @em position_
         std::mutex position_mutex_;
-
-        int mode = 3;
+        // each mode is one type of noize
+        int mode = 0;
+        // time variable for rain movement
         int t = 0;
 
+        //return random color of the cell based on the mode
         iimavlib::rgb_t random() {
 
             std::vector <iimavlib::rgb_t> shades_pink = {
@@ -77,25 +79,51 @@ namespace iimavlib {
                     iimavlib::rgb_t(210, 180, 140)
             };
 
+            std::vector <iimavlib::rgb_t> shades_green = {
+                    iimavlib::rgb_t(0, 102, 34),
+                    iimavlib::rgb_t(0, 179, 60),
+                    iimavlib::rgb_t(0, 255, 85),
+                    iimavlib::rgb_t(77, 255, 136),
+                    iimavlib::rgb_t(128, 255, 170),
+                    iimavlib::rgb_t(204, 255, 221)
+            };
+
+            std::vector <iimavlib::rgb_t> shades_purple = {
+                    iimavlib::rgb_t(153, 0, 153),
+                    iimavlib::rgb_t(179, 0, 179),
+                    iimavlib::rgb_t(255, 0, 255),
+                    iimavlib::rgb_t(255, 51, 255),
+                    iimavlib::rgb_t(255, 128, 255),
+                    iimavlib::rgb_t(255, 204, 255)
+            };
+
             int index = 0 + (std::rand() % (5 - 0 + 1));
 
             switch (mode) {
-                case 0: {
+
+                // shades of grey for white noize
+                case 1: {
                     int s = 0 + (std::rand() % (255 - 0 + 1));
                     return iimavlib::rgb_t(s, s, s);
                 };
-                case 1:
-                    return shades_pink[index];
                 case 2:
+                    return shades_pink[index];
+                case 3:
                     return shades_brown[index];
+                case 4:
+                    return shades_green[index];
+                case 5:
+                    return shades_purple[index];
 
+                    // if something goes wrong
                 default: {
-                    return iimavlib::rgb_t(13, 21, 133);
+                    return iimavlib::rgb_t(255, 21, 133);
                 };
             }
 
         };
 
+        // switch mode on click
         bool do_mouse_button(const int button, const bool pressed, const int x, const int y) {
             if (!pressed) return true;
             std::unique_lock <std::mutex> lock(position_mutex_);
@@ -103,20 +131,23 @@ namespace iimavlib {
             index_ = mode - 1;
             position_ = 0;
 
-            if (mode > 3) mode = 0;
+            if (mode > 5) mode = 0;
             return true;
         }
 
         void update_screen() {
-            if (mode == 3) {
+            if (mode == 0) {
                 update_city();
-            } else {
+            }
+            else {
                 update_noize();
             }
         }
 
         iimavlib::rgb_t window_color = iimavlib::rgb_t(0, 0, t);
 
+
+        // render rain as a set of drops
         void rain() {
 
             iimavlib::rgb_t rain_color = iimavlib::rgb_t(255, 255, 255);
@@ -170,7 +201,7 @@ namespace iimavlib {
         void update_noize() {
 
             int xy = 100;
-            //STROKA 1
+            // line 1
             iimavlib::rgb_t sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(0, 0, xy, xy), sh);
             sh = random();
@@ -190,7 +221,7 @@ namespace iimavlib {
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(8 * xy, 0, xy, xy), sh);
             sh = random();
-            //STROKA 2
+            // line 2
             draw_rectangle(data, iimavlib::rectangle_t(0, xy, xy, xy), sh);
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(xy, xy, xy, xy), sh);
@@ -209,7 +240,7 @@ namespace iimavlib {
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(8 * xy, xy, xy, xy), sh);
             sh = random();
-            //STROKA 3
+            // line 3
             draw_rectangle(data, iimavlib::rectangle_t(0, xy * 2, xy, xy), sh);
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(xy, xy * 2, xy, xy), sh);
@@ -228,7 +259,7 @@ namespace iimavlib {
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(8 * xy, xy * 2, xy, xy), sh);
             sh = random();
-            //STROKA 4
+            // line 4
             draw_rectangle(data, iimavlib::rectangle_t(0, xy * 3, xy, xy), sh);
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(xy, xy * 3, xy, xy), sh);
@@ -247,7 +278,7 @@ namespace iimavlib {
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(8 * xy, xy * 3, xy, xy), sh);
             sh = random();
-            //STROKA 5
+            // line 5
             draw_rectangle(data, iimavlib::rectangle_t(0, xy * 4, xy, xy), sh);
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(xy, xy * 4, xy, xy), sh);
@@ -266,7 +297,7 @@ namespace iimavlib {
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(8 * xy, xy * 4, xy, xy), sh);
             sh = random();
-            //STROKA 6
+            // line 6
             draw_rectangle(data, iimavlib::rectangle_t(0, xy * 5, xy, xy), sh);
             sh = random();
             draw_rectangle(data, iimavlib::rectangle_t(xy, xy * 5, xy, xy), sh);
@@ -301,7 +332,8 @@ namespace iimavlib {
             if (index_ < 0 || (noises.size() <= static_cast<size_t>(index_))) {
                 // If there's no active drum, we just fill the buffer with zeroes
                 std::fill(data, data + buffer.valid_samples, 0);
-            } else {
+            }
+            else {
                 //logger[log_level::info] << "Using " << index_ << " from " << position_;
                 std::unique_lock <std::mutex> lock(position_mutex_);
                 // Get ref. to the current drum's buffer
@@ -319,7 +351,8 @@ namespace iimavlib {
                     std::copy(first, last, data); // Copy the samples to the buffer
                     position_ += written; // Advance the drum's buffer position
                     remaining -= written;
-                } else {
+                }
+                else {
                     // We've already copied all the sample, so let's set current drum to none
                     index_ = -1;
                     position_ = 0;
@@ -331,7 +364,7 @@ namespace iimavlib {
 
 
 
-
+            // render
             update_screen();
             return error_type_t::ok;
         }
@@ -384,6 +417,24 @@ iimavlib::rgb_t random(int mode) {
             iimavlib::rgb_t(210, 180, 140)
     };
 
+    std::vector <iimavlib::rgb_t> shades_green = {
+            iimavlib::rgb_t(0, 102, 34),
+            iimavlib::rgb_t(0, 179, 60),
+            iimavlib::rgb_t(0, 255, 85),
+            iimavlib::rgb_t(77, 255, 136),
+            iimavlib::rgb_t(128, 255, 170),
+            iimavlib::rgb_t(204, 255, 221)
+    };
+
+    std::vector <iimavlib::rgb_t> shades_purple = {
+            iimavlib::rgb_t(153, 0, 153),
+            iimavlib::rgb_t(179, 0, 179),
+            iimavlib::rgb_t(255, 0, 255),
+            iimavlib::rgb_t(255, 51, 255),
+            iimavlib::rgb_t(255, 128, 255),
+            iimavlib::rgb_t(255, 204, 255)
+    };
+
     int index = 0 + (std::rand() % (5 - 0 + 1));
 
     switch (mode) {
@@ -395,6 +446,10 @@ iimavlib::rgb_t random(int mode) {
             return shades_pink[index];
         case 2:
             return shades_brown[index];
+        case 4:
+            return shades_green[index];
+        case 5:
+            return shades_purple[index];
 
         default: {
             return iimavlib::rgb_t(13, 21, 133);
